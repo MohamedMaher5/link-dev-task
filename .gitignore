@@ -12,7 +12,6 @@ code/storage/framework/
 code/storage/debugbar/
 code/storage/oauth-private.key
 code/storage/oauth-public.key
-code/bootstrap/cache/
 
 # IDE and system files
 .DS_Store
