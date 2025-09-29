@@ -1,0 +1,64 @@
+FROM php:8.2-fpm
+
+# Install dependencies
+# supervisor - to run multiple processes in a container (nginx and php-fpm)
+# nginx - to serve web pages
+# netcat-openbsd - is a tool to scan a connection to a port - to wait for mysql to start before running migrations
+# zip unzip - Needed for Composer zip handling, required by Laravel packages.
+# curl - needed by Composer or Laravel commands.
+# libzip-dev - Required for PHP zip extension.
+# libpng-dev libjpeg-dev libfreetype6-dev - Needed by GD extension for image handling.
+# dos2unix - to convert windows line endings to unix line endings (needed for start-container.sh script)
+# git - to clone repositories
+# pdo_mysql - to work with mysql database (php-mysql) 
+# gd - to work with images (php-gd) 
+# composer - to manage dependencies
+# rm -rf /var/lib/apt/lists/* - to clean up the image after installing dependencies
+
+RUN apt update && apt install -y \
+    nginx supervisor netcat-openbsd zip unzip curl \
+    libzip-dev libpng-dev libjpeg-dev libfreetype6-dev \
+    dos2unix git \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo_mysql zip gd exif \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Set working directory
+WORKDIR /var/www
+
+
+# Cache the install step if composer.lock hasn’t changed
+COPY ./code/composer.json ./code/composer.lock /var/www/
+
+# sets an environment variable inside your Docker image/container that tells Composer where to store its cache files.
+# composer caches downloaded packages in the COMPOSER_CACHE_DIR directory, which is set to /tmp/composer-cache in this case.
+# Speeds up repeated composer install runs (if done right) by reusing cached packages.
+ENV COMPOSER_CACHE_DIR=/tmp/composer-cache
+
+# Copy Laravel codebase to the container
+COPY ./code /var/www
+
+# Install Composer dependencies
+# --no-interaction makes sure composer does not ask any interactive question
+# --prefer-dist is recommended for production environments
+# --optimize-autoloader makes autoloading faster by generating a class map to get all the classes that need to be included in a single file
+# --no-dev is used to install only production dependencies (no dev dependencies)
+RUN composer install --prefer-dist --optimize-autoloader 
+
+
+# Copy configs
+COPY ./docker/php/supervisord.conf /etc/supervisord.conf
+COPY ./docker/nginx/nginx.conf /etc/nginx/nginx.conf
+COPY ./docker/nginx/default.conf /etc/nginx/conf.d/default.conf
+
+
+# Expose web ports
+EXPOSE 80 443
+
+# copy script file which will run all laravel commands and start supervisor to run multiple processes in the container (nginx and php-fpm)
+COPY ./scripts/start-container.dev.sh /usr/local/bin/start-container.dev.sh
+RUN dos2unix /usr/local/bin/start-container.dev.sh && chmod +x /usr/local/bin/start-container.dev.sh
+CMD ["/usr/local/bin/start-container.dev.sh"]

@@ -1,0 +1,39 @@
+services:
+  app:
+    container_name: link-dev-task-app-prod
+    image: linkdevprod:latest
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    volumes:
+      - ./code:/var/www
+      - ./env/.env.production:/var/www/.env
+      - ./docker/php/php.production.ini:/etc/php/8.2/fpm/php.ini
+      - ./docker/php/php-fpm.conf:/etc/php/8.2/fpm/php-fpm.conf
+    environment:
+      APP_ENV: production
+    ports:
+      - "4050:80"
+    depends_on:
+      - db
+    networks:
+      - network
+  db:
+    container_name: link-dev-task-db-prod
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: taskDB
+      MYSQL_USER: taskuser
+      MYSQL_PASSWORD: Uy^Xi*9!D
+    volumes:
+      - /home/githubdeploy/mysql-prod-data:/var/lib/mysql
+    ports:
+      - "4049:3306"
+    networks:
+      - network
+
+networks:
+  network:
+    driver: bridge

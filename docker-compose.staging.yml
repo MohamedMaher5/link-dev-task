@@ -1,0 +1,46 @@
+services:
+  app:
+    container_name: link-dev-task-app-staging
+    image: linkdevstaging:latest
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile.dev
+    volumes:
+      - ./code:/var/www
+      - ./env/.env.staging:/var/www/.env
+      - ./docker/php/php.development.ini:/usr/local/etc/php/php.ini
+      - ./scripts/scheduler.sh:/docker/scheduler.sh
+      - ./docker/php/php-fpm.conf:/usr/local/etc/php-fpm.conf
+      - ./docker/php/www.conf:/usr/local/etc/php-fpm.d/www.conf
+      - ./docker/php/supervisord.conf:/etc/supervisord.conf
+    environment:
+      APP_ENV: staging
+    ports:
+      - "4050:80"
+    depends_on:
+      - db
+    networks:
+      - network
+  db:
+    container_name: link-dev-task-db-staging
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: taskDB
+      MYSQL_USER: taskuser
+      MYSQL_PASSWORD: Uy^Xi*9!D
+    volumes:
+      - /home/githubdeploy/mysql-stage-mysqldata:/var/lib/mysql
+
+    ports:
+      - "4049:3306"
+    networks:
+      - network
+
+volumes:
+  mysql_data:
+
+networks:
+  network:
+    driver: bridge

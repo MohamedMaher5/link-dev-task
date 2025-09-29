@@ -1,0 +1,46 @@
+# Laravel-specific directories
+code/public/storage
+code/storage/*.key
+code/.env
+code/.env.*.local
+code/vendor
+code/public/vendor
+code/.vscode
+# Logs & caches
+code/storage/logs/
+code/storage/framework/
+code/storage/debugbar/
+code/storage/oauth-private.key
+code/storage/oauth-public.key
+code/bootstrap/cache/
+
+# IDE and system files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+.idea/
+.vscode/
+*.log
+*.bak
+
+# Composer dependencies
+code/phpunit.xml
+code/phpunit.xml.dist
+
+# NPM/Yarn dependencies
+yarn-error.log
+npm-debug.log
+pnpm-debug.log
+package-lock.json
+
+# Docker-related
+docker-compose.override.yml
+docker/mysql/
+
+# Laravel testing & artifacts
+.phpunit.result.cache
+.phpstorm.meta.php
+

@@ -1,0 +1,47 @@
+services:
+  app:
+    container_name: link-dev-task-app-${COMMIT_ID}
+    image: linkdevtaskapp:${COMMIT_ID}
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    volumes:
+      - ./code:/var/www
+      - ./env/.env.dev:/var/www/.env
+      - ./docker/php/php.development.ini:/usr/local/etc/php/php.ini
+      - ./docker/php/php-fpm.conf:/etc/php/8.2/fpm/php-fpm.conf
+    environment:
+      APP_ENV: local
+      APP_PORT: ${APP_PORT}
+      COMMIT_ID: ${COMMIT_ID}
+    ports:
+      - "${APP_PORT}:80"
+    depends_on:
+      - db
+    networks:
+      - network
+
+  db:
+    container_name: link-dev-task-db${COMMIT_ID}
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: taskDB
+      MYSQL_USER: taskuser
+      MYSQL_PASSWORD: Uy^Xi*9!D
+      DB_PORT: ${DB_PORT}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "${DB_PORT}:3306"
+    networks:
+      - network
+
+volumes:
+  mysql_data:
+
+networks:
+  network:
+    driver: bridge
+    name: network${COMMIT_ID}
+    external: true
