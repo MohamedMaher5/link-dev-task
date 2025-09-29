@@ -8,7 +8,6 @@ code/public/vendor
 code/.vscode
 # Logs & caches
 code/storage/logs/
-code/storage/framework/
 code/storage/debugbar/
 code/storage/oauth-private.key
 code/storage/oauth-public.key
