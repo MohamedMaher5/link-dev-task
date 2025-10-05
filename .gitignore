@@ -24,10 +24,6 @@ Thumbs.db
 *.log
 *.bak
 
-# Composer dependencies
-code/phpunit.xml
-code/phpunit.xml.dist
-
 # NPM/Yarn dependencies
 yarn-error.log
 npm-debug.log

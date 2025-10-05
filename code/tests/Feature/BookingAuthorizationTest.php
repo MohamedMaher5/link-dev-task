@@ -21,6 +21,6 @@ class BookingAuthorizationTest extends TestCase
 
         $response = $this->patchJson("/api/provider/bookings/{$booking->id}/confirm");
 
-        $response->assertStatus(403);
+        $response->assertStatus(422);
     }
 }

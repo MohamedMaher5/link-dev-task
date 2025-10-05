@@ -18,10 +18,13 @@ class CreateBookingTest extends TestCase
 
         $response = $this->postJson('/api/bookings', [
             'service_id' => $service->id,
-            'start_time' => now()->addDay()->toDateTimeString(),
+            'date' => now()->addDay()->toDateString(),
+            'start_time' => now()->addDay()->format('H:i'),
         ]);
 
         $response->assertStatus(201)
-            ->assertJsonStructure(['id', 'service_id', 'status']);
+            ->assertJsonStructure([
+                'data' => ['id', 'service', 'status']
+            ]);
     }
 }

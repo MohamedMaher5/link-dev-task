@@ -23,7 +23,7 @@ class AvailabilityOverrideRequest extends FormRequest
     {
         return [
             'date' => 'required|date|date_format:Y-m-d',
-            'start_time' => 'nullable|date_format:H:i',
+            'start_time' => 'nullable|date_format:H:i:after:today',
             'end_time' => 'nullable|date_format:H:i|after:start_time',
             'reason' => 'nullable|string|max:255',
         ];

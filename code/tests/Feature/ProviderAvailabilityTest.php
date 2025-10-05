@@ -22,7 +22,10 @@ class ProviderAvailabilityTest extends TestCase
         $overlap = ProviderAvailability::where('provider_id', $provider->id)
             ->where('day_of_week', 1)
             ->where(function ($q) {
-                $q->whereBetween('start_time', ['11:00', '11:30']);
+                $q->where(function ($q) {
+                    $q->where('start_time', '<', '11:30')
+                        ->where('end_time', '>', '11:00');
+                });
             })->exists();
 
         $this->assertTrue($overlap);
